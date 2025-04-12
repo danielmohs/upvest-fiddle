@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: fiddle
+    database: upvest-fiddle
+    schema: analytics_challenge_2024
+    tables:
+      - name: ledger
+        description: "Ledger entries for securities movements"
+      - name: cross_reference
+        description: "Cross reference data with flow information"
