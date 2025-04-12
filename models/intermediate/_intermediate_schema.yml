@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: int_cross_reference_pivoted
+    description: >
+      Pivoted version of the cross_reference data that transforms the key-value pairs
+      into a wide format with one row per cross_reference_id. This model makes it easier
+      to join with other tables and provides direct access to common attributes like
+      order_id, venue_id, client_id, and account_id.
+
+    columns:
+      - name: cross_reference_id
+        description: "Unique identifier for each cross reference record"
+        tests:
+          - unique
+      - name: order_id
+        description: "Identifier for the order associated with this cross reference"
+      - name: venue_id
+        description: "Identifier for the trading venue (e.g., NYSE)"
+      - name: client_id
+        description: "Identifier for the client who placed the order"
+      - name: account_id
+        description: "Identifier for the account used for the transaction"
+
+
+  - name: int_ledger_enriched
+    description: >
+      Intermediate model that combines cleaned ledger transaction data with pivoted data from cross_reference.
+      Adds enrichment fields including order ID, venue, client ID, and account ID for downstream analysis.
+      Filters out transactions that have been corrected by later entries, ensuring only the final version of each booking is included.
+      
+    columns:
+      - name: booking_id
+        description: "Unique transaction-level identifier. All entries are final (i.e., not corrected by a later booking)."
+        tests:
+          - not_null
+          - unique
+      - name: isin
+        description: "International Securities Identification Number"
+      - name: operation_type
+        description: "Type of ledger operation (e.g., SECURITIES_MOVEMENT). Might include more types in future"
+      - name: debit_account_id
+        description: "Account ID for debit transactions"
+      - name: debit_account_description
+        description: "Type of debit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+      - name: debit_amount
+        description: "Amount debited from the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+      - name: credit_account_id
+        description: "Account ID for credit transactions"
+      - name: credit_account_description
+        description: "Type of credit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+      - name: credit_amount
+        description: "Amount credited to the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+      - name: is_correction
+        description: >
+          Boolean flag indicating whether this row is a correction of a previous booking_id.
+          Remaining entries in this model are all final versions (i.e., not superseded).
+      - name: cross_reference_id
+        description: "Foreign key linking to the cross_reference table"
+      - name: order_id
+        description: "ID of the order associated with the transaction"
+      - name: venue_id
+        description: "Trading venue ID where the security was purchased or sold associated with the transaction"
+      - name: client_id
+        description: "ID of the client associated with the transaction"
+      - name: xref_account_id
+        description: "ID of the account associated with the transaction, renamed from account_id to avoid confusion with the ledger table"
