@@ -1,0 +1,72 @@
+version: 2 
+
+models:
+  - name: stg_ledger
+    description: >
+      Cleaned and renamed staging model for ledger transactions.
+      This model standardizes and renames fields related to financial transactions.
+      It includes transaction-level data such as debit and credit amounts, account identifiers, ISINs, and links to metadata via cross_reference_id.
+      A correction flag is included to identify rows that supersede earlier bookings, enabling support for versioning 
+      and deduplication logic in later transformation layers.
+    columns:
+      - name: booking_id
+        description: "Transaction-level identifier, renamed from booking_no"
+        tests:
+          - not_null
+          - unique
+      - name: isin
+        description: "International Securities Identification Number"
+      - name: operation_type
+        description: "Type of ledger operation (e.g., SECURITIES_MOVEMENT). Might include more types in future"
+        tests:
+          - not_null
+      - name: debit_account_id
+        description: "Account ID for debit transactions"
+        tests:
+          - not_null
+      - name: debit_account_description
+        description: "Type of debit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+      - name: debit_amount
+        description: "Amount debited from the account"
+      - name: credit_account_id
+        description: "Account ID for credit transactions"
+        tests:
+          - not_null
+      - name: credit_account_description
+        description: "Type of credit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+      - name: credit_amount
+        description: "Amount credited to the account"
+      - name: booking_id_correction
+        description: "Correction of the booking ID, renamed from booking_no_correction"
+      - name: is_correction
+        description: "Boolean flag indicating whether this row is a correction of a previous booking_id"
+      - name: cross_reference_id
+        description: "Foreign key linking to the cross_reference table"
+        tests:
+          - relationships:
+              to: ref('stg_cross_reference')
+              field: cross_reference_id
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "debit_amount = credit_amount"
+
+
+  - name: stg_cross_reference
+    description: > 
+      Cleaned and renamed staging model for cross_reference table.
+      This model flattens the nested flows array, extracting one key-value pair per row.
+      Used to enrich the ledger table with additional information such as order ID, venue, client ID, account ID.
+    columns:
+      - name: cross_reference_id
+        description: "Transaction-level identifier, renamed from id"
+        tests:
+          - not_null
+      - name: flow_key
+        description: "Name of the flow attribute extracted from the nested structure (e.g., 'order_id', 'venue_id', 'client_id', 'account_id')"
+      - name: flow_value
+        description: "The value associated with the flow_key"
+      - name: unique_key
+        description: "Unique identifier for each flow, id pair. Due to unnesting, there are multiple rows per cross_reference_id"
+        tests:
+          - not_null
+          - unique
