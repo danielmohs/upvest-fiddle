@@ -51,6 +51,8 @@ models:
         description: "Type of credit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
       - name: credit_amount
         description: "Amount credited to the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+      - name: booking_id_correction
+        description: "ID of the booking that is replaced by this booking"
       - name: is_correction
         description: >
           Boolean flag indicating whether this row is a correction of a previous booking_id.

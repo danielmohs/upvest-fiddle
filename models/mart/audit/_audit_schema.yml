@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: audit_booking_corrections
+    description: >
+      Model containing all booking_ids that were corrected and replaced by a later transaction.
+      Used to filter out superseded rows from downstream mart models while supporting auditability.
+
+    columns:
+      - name: original_booking_id
+        description: "The original booking_id that was corrected."
+        tests:
+          - not_null
+      - name: corrected_by_booking_id
+        description: "The booking_id that replaced the original."
+        tests:
+          - not_null
