@@ -8,6 +8,11 @@ models:
       It includes transaction-level data such as debit and credit amounts, account identifiers, ISINs, and links to metadata via cross_reference_id.
       A correction flag is included to identify rows that supersede earlier bookings, enabling support for versioning 
       and deduplication logic in later transformation layers.
+
+    note: >
+      Current tests assume all transactions are of type 'SECURITIES_MOVEMENT'.
+      These constraints may need to be revisited if additional operation types (e.g., 'CASH_MOVEMENT', 'FEE') are introduced in production.
+
     columns:
       - name: booking_id
         description: "Transaction-level identifier, renamed from booking_no"
@@ -27,7 +32,7 @@ models:
       - name: debit_account_description
         description: "Type of debit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
       - name: debit_amount
-        description: "Amount debited from the account"
+        description: "Amount debited from the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
       - name: credit_account_id
         description: "Account ID for credit transactions"
         tests:
@@ -35,7 +40,7 @@ models:
       - name: credit_account_description
         description: "Type of credit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
       - name: credit_amount
-        description: "Amount credited to the account"
+        description: "Amount credited to the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
       - name: booking_id_correction
         description: "Correction of the booking ID, renamed from booking_no_correction"
       - name: is_correction
@@ -56,13 +61,17 @@ models:
       Cleaned and renamed staging model for cross_reference table.
       This model flattens the nested flows array, extracting one key-value pair per row.
       Used to enrich the ledger table with additional information such as order ID, venue, client ID, account ID.
+      
     columns:
       - name: cross_reference_id
-        description: "Transaction-level identifier, renamed from id"
+        description: "Identifier for each cross reference record, renamed from id"
         tests:
           - not_null
       - name: flow_key
         description: "Name of the flow attribute extracted from the nested structure (e.g., 'order_id', 'venue_id', 'client_id', 'account_id')"
+        tests:
+          - accepted_values:
+              values: "{{ var('flow_keys') }}"
       - name: flow_value
         description: "The value associated with the flow_key"
       - name: unique_key
