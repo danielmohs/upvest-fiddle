@@ -10,7 +10,7 @@ models:
       and deduplication logic in later transformation layers.
 
     note: >
-      Current tests assume all transactions are of type 'SECURITIES_MOVEMENT'.
+      Current tests assume all transactions are of type 'securities_movement'.
       These constraints may need to be revisited if additional operation types (e.g., 'CASH_MOVEMENT', 'FEE') are introduced in production.
 
     columns:
@@ -22,7 +22,7 @@ models:
       - name: isin
         description: "International Securities Identification Number"
       - name: operation_type
-        description: "Type of ledger operation (e.g., SECURITIES_MOVEMENT). Might include more types in future"
+        description: "Type of ledger operation (e.g., securities_movement). Might include more types in future"
         tests:
           - not_null
       - name: debit_account_id
@@ -30,17 +30,17 @@ models:
         tests:
           - not_null
       - name: debit_account_description
-        description: "Type of debit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+        description: "Type of debit account (e.g., customer_account, custodian_account)"
       - name: debit_amount
-        description: "Amount debited from the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+        description: "Amount debited from the account. For 'securities_movement' operations, this reflects the number of shares transferred"
       - name: credit_account_id
         description: "Account ID for credit transactions"
         tests:
           - not_null
       - name: credit_account_description
-        description: "Type of credit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+        description: "Type of credit account (e.g., customer_account, custodian_account)"
       - name: credit_amount
-        description: "Amount credited to the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+        description: "Amount credited to the account. For 'securities_movement' operations, this reflects the number of shares transferred"
       - name: booking_id_correction
         description: "Correction of the booking ID, renamed from booking_no_correction"
       - name: is_correction

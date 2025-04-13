@@ -15,33 +15,64 @@ models:
         description: "Short exchange ticker (e.g., NVDA, VWCE)."
 
 
-  - name: fct_ledger_flow_summary
-    description: > 
-      Fact table tracking net flows (buys and sells) of security movements by ISIN 
-      and internal ledger account
+  - name: customer_asset_summary
+    description: >
+      This model summarizes asset-level trading behavior per user account. 
+      It allows stakeholders to analyze trading volume, asset engagement, and platform usage across customers and clients. 
+      Metrics include net flow, transaction counts, and asset enrichment for reporting. 
+      The model is grouped by customer, client, ISIN, and trading venue.
+
     columns:
       - name: isin
-        description: "International Securities Identification Number of the security"
-        tests:
-          - relationships:
-              to: ref('dim_security')
-              field: isin
+        description: "International Securities Identification Number"
       - name: security_name
         description: "Full name of the security"
       - name: security_ticker
-        description: "Trading symbol/ticker for the security"
-      - name: account_id
-        description: "Customer account identifier"
+        description: "Short exchange ticker (e.g., NVDA, VWCE)"
+      - name: client_id
+        description: "ID of the client associated with the transaction"
+      - name: customer_account_id
+        description: "ID of the account associated with the transaction, renamed from account_id to avoid confusion with the ledger table"
+      - name: venue_id
+        description: "Trading venue ID where the security was purchased or sold associated with the transaction"
       - name: shares_bought
-        description: "Number of shares purchased (credits to customer account)"
+        description: "Total number of shares purchased (credits to customer account)"
       - name: shares_sold
-        description: "Number of shares sold (debits from customer account)"
+        description: "Total number of shares sold (debits from customer account)"
       - name: net_flow
         description: "Net change in shares (bought minus sold)"
-      - name: booking_id
-        description: "Original booking identifier"
-      - name: merge_key
-        description: "Key used for incremental loading, represents the effective booking ID"
-        tests:
-          - unique
-          - not_null
+      - name: credit_transactions
+        description: "Number of buy transactions"
+      - name: debit_transactions
+        description: "Number of sell transactions"
+      - name: total_transactions
+        description: "Total number of transactions (buy + sell)"
+
+
+  - name: securities_flow_summary
+    description: >
+      This model summarizes internal ledger-based security flows across asset classes. 
+      It aggregates buy and sell activity by internal ledger account and ISIN, enabling monitoring of platform-wide securities movements. 
+      Metrics include total shares bought and sold, as well as net flow per account and asset. 
+      The model is grouped by internal ledger account ID and security, and is enriched with human-readable asset metadata. 
+      It is optimized for internal operations reporting, exposure tracking, and platform flow analysis.
+
+    columns:
+      - name: isin
+        description: "International Securities Identification Number"
+      - name: security_name
+        description: "Full name of the security"
+      - name: security_ticker
+        description: "Short exchange ticker (e.g., NVDA, VWCE)"
+      - name: account_id
+        description: "Internal ledger account ID used for the transaction"
+      - name: client_id
+        description: "ID of the client associated with the transaction"
+      - name: shares_bought
+        description: "Total number of shares purchased (credits to customer account)"
+      - name: shares_sold
+        description: "Total number of shares sold (debits from customer account)"
+      - name: net_flow
+        description: "Net change in shares (bought minus sold)"
+      - name: total_transactions
+        description: "Total number of transactions (buy + sell)"

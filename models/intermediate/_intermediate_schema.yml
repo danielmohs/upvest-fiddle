@@ -37,19 +37,19 @@ models:
       - name: isin
         description: "International Securities Identification Number"
       - name: operation_type
-        description: "Type of ledger operation (e.g., SECURITIES_MOVEMENT). Might include more types in future"
+        description: "Type of ledger operation (e.g., securities_movement). Might include more types in future"
       - name: debit_account_id
         description: "Account ID for debit transactions"
       - name: debit_account_description
-        description: "Type of ledger debit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+        description: "Type of ledger debit account (e.g., customer_account, custodian_account)"
       - name: debit_amount
-        description: "Amount debited from the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+        description: "Amount debited from the account. For 'securities_movement' operations, this reflects the number of shares transferred"
       - name: credit_account_id
         description: "Account ID for credit transactions"
       - name: credit_account_description
-        description: "Type of ledger credit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+        description: "Type of ledger credit account (e.g., customer_account, custodian_account)"
       - name: credit_amount
-        description: "Amount credited to the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+        description: "Amount credited to the account. For 'securities_movement' operations, this reflects the number of shares transferred"
       - name: booking_id_correction
         description: "ID of the booking that is replaced by this booking"
       - name: is_correction
@@ -82,19 +82,19 @@ models:
       - name: isin
         description: "International Securities Identification Number"
       - name: operation_type
-        description: "Type of ledger operation (e.g., SECURITIES_MOVEMENT). Might include more types in future"
+        description: "Type of ledger operation (e.g., securities_movement). Might include more types in future"
       - name: debit_account_id
         description: "Account ID for debit transactions"
       - name: debit_account_description
-        description: "Type of ledger debit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+        description: "Type of ledger debit account (e.g., customer_account, custodian_account)"
       - name: debit_amount
-        description: "Amount debited from the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+        description: "Amount debited from the account. For 'securities_movement' operations, this reflects the number of shares transferred"
       - name: credit_account_id
         description: "Account ID for credit transactions"
       - name: credit_account_description
-        description: "Type of ledger credit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+        description: "Type of ledger credit account (e.g., customer_account, custodian_account)"
       - name: credit_amount
-        description: "Amount credited to the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+        description: "Amount credited to the account. For 'securities_movement' operations, this reflects the number of shares transferred"
       - name: booking_id_correction
         description: "ID of the booking that is replaced by this booking"
       - name: is_correction
