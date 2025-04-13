@@ -13,6 +13,7 @@ ledger_enriched AS (
         l.credit_account_id,
         l.credit_account_description,
         l.credit_amount,
+        l.booking_id_correction,
         l.is_correction,
         l.cross_reference_id,
         x.order_id,

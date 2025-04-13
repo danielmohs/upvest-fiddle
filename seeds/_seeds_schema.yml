@@ -1,0 +1,17 @@
+version: 2
+
+seeds:
+  - name: isin_lookup
+    description: >
+      Lookup table for ISINs, mapping to security names and tickers.
+      Note that this might come as well from an internal database instead of a CSV.
+    columns:
+      - name: isin
+        description: "International Securities Identification Number."
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Full name of the security."
+      - name: ticker
+        description: "Short exchange ticker (e.g., NVDA, VWCE)."
