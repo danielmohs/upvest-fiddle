@@ -29,8 +29,18 @@ vars:
 # Models
 models:
   fiddle:
-    +materialized: table
     staging:
       +materialized: view
     intermediate:
       +materialized: view
+    mart:
+      +materialized: table
+
+
+seeds:
+  fiddle:
+    isin_lookup:
+      column_types:
+        isin: string
+        name: string
+        ticker: string

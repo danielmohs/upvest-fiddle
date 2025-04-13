@@ -1,5 +1,47 @@
 version: 2
 
 models:
-  - name: flow_summary
-    description: >
+  - name: dim_security
+    description: "Dimension table for securities with ISIN, name, and ticker information"
+    columns:
+      - name: isin
+        description: "International Securities Identification Number"
+        tests:
+          - unique
+          - not_null
+      - name: security_name
+        description: "Full name of the security"
+      - name: security_ticker
+        description: "Short exchange ticker (e.g., NVDA, VWCE)."
+
+
+  - name: fct_ledger_flow_summary
+    description: > 
+      Fact table tracking net flows (buys and sells) of security movements by ISIN 
+      and internal ledger account
+    columns:
+      - name: isin
+        description: "International Securities Identification Number of the security"
+        tests:
+          - relationships:
+              to: ref('dim_security')
+              field: isin
+      - name: security_name
+        description: "Full name of the security"
+      - name: security_ticker
+        description: "Trading symbol/ticker for the security"
+      - name: account_id
+        description: "Customer account identifier"
+      - name: shares_bought
+        description: "Number of shares purchased (credits to customer account)"
+      - name: shares_sold
+        description: "Number of shares sold (debits from customer account)"
+      - name: net_flow
+        description: "Net change in shares (bought minus sold)"
+      - name: booking_id
+        description: "Original booking identifier"
+      - name: merge_key
+        description: "Key used for incremental loading, represents the effective booking ID"
+        tests:
+          - unique
+          - not_null
