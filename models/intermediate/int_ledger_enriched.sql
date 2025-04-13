@@ -3,6 +3,11 @@ WITH ledger_source AS (
     FROM {{ ref('stg_ledger') }}
 ),
 
+cross_reference AS (
+    SELECT *
+    FROM {{ ref('int_cross_reference_pivoted') }}
+),
+
 ledger_enriched AS (
     SELECT l.booking_id,
         l.isin,
@@ -19,13 +24,10 @@ ledger_enriched AS (
         x.order_id,
         x.venue_id,
         x.client_id,
-        x.account_id AS xref_account_id
+        x.account_id AS customer_account_id
 
     FROM ledger_source l
-    LEFT JOIN {{ ref('int_cross_reference_pivoted') }} x USING (cross_reference_id)
-    WHERE booking_id NOT IN ( -- Exclude bookings that were corrected (keep only final version)
-        SELECT booking_id_correction FROM ledger_source WHERE is_correction
-        )
+    LEFT JOIN cross_reference x USING (cross_reference_id)
 )
 
 SELECT * FROM ledger_enriched

@@ -27,11 +27,10 @@ models:
     description: >
       Intermediate model that combines cleaned ledger transaction data with pivoted data from cross_reference.
       Adds enrichment fields including order ID, venue, client ID, and account ID for downstream analysis.
-      Filters out transactions that have been corrected by later entries, ensuring only the final version of each booking is included.
       
     columns:
       - name: booking_id
-        description: "Unique transaction-level identifier. All entries are final (i.e., not corrected by a later booking)."
+        description: "Unique transaction-level identifier"
         tests:
           - not_null
           - unique
@@ -42,21 +41,19 @@ models:
       - name: debit_account_id
         description: "Account ID for debit transactions"
       - name: debit_account_description
-        description: "Type of debit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+        description: "Type of ledger debit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
       - name: debit_amount
         description: "Amount debited from the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
       - name: credit_account_id
         description: "Account ID for credit transactions"
       - name: credit_account_description
-        description: "Type of credit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+        description: "Type of ledger credit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
       - name: credit_amount
         description: "Amount credited to the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
       - name: booking_id_correction
         description: "ID of the booking that is replaced by this booking"
       - name: is_correction
-        description: >
-          Boolean flag indicating whether this row is a correction of a previous booking_id.
-          Remaining entries in this model are all final versions (i.e., not superseded).
+        description: "Boolean flag indicating whether this row is a correction of a previous booking_id"
       - name: cross_reference_id
         description: "Foreign key linking to the cross_reference table"
       - name: order_id
@@ -65,5 +62,54 @@ models:
         description: "Trading venue ID where the security was purchased or sold associated with the transaction"
       - name: client_id
         description: "ID of the client associated with the transaction"
-      - name: xref_account_id
+      - name: customer_account_id
         description: "ID of the account associated with the transaction, renamed from account_id to avoid confusion with the ledger table"
+
+
+  - name: int_ledger_corrected
+    description: >
+      Final version of the ledger data that handles corrections through an incremental merge strategy.
+      For initial loads, it excludes bookings that have been corrected by later entries.
+      For incremental loads, it uses a merge strategy with a unique merge_key to ensure corrections
+      replace the original entries, resulting in a table that contains only the final version of each booking.
+      
+    columns:
+      - name: booking_id
+        description: "Unique transaction-level identifier"
+        tests:
+          - not_null
+          - unique
+      - name: isin
+        description: "International Securities Identification Number"
+      - name: operation_type
+        description: "Type of ledger operation (e.g., SECURITIES_MOVEMENT). Might include more types in future"
+      - name: debit_account_id
+        description: "Account ID for debit transactions"
+      - name: debit_account_description
+        description: "Type of ledger debit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+      - name: debit_amount
+        description: "Amount debited from the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+      - name: credit_account_id
+        description: "Account ID for credit transactions"
+      - name: credit_account_description
+        description: "Type of ledger credit account (e.g., CUSTOMER_ACCOUNT, CUSTODIAN_ACCOUNT)"
+      - name: credit_amount
+        description: "Amount credited to the account. For 'SECURITIES_MOVEMENT' operations, this reflects the number of shares transferred"
+      - name: booking_id_correction
+        description: "ID of the booking that is replaced by this booking"
+      - name: is_correction
+        description: "Boolean flag indicating whether this row is a correction of a previous booking_id"
+      - name: cross_reference_id
+        description: "Foreign key linking to the cross_reference table"
+      - name: order_id
+        description: "ID of the order associated with the transaction"
+      - name: venue_id
+        description: "Trading venue ID where the security was purchased or sold associated with the transaction"
+      - name: client_id
+        description: "ID of the client associated with the transaction"
+      - name: customer_account_id
+        description: "ID of the account associated with the transaction, renamed from account_id to avoid confusion with the ledger table"
+      - name: merge_key
+        description: > 
+          Identifier for merging records that handles corrections. 
+          For corrected entries, uses the correction's booking_id, for normal entries, uses the original booking_id.
