@@ -36,6 +36,45 @@ The project includes various tests to ensure data quality:
 - Referential integrity checks
 - Custom data quality tests
 
+## Data Workflow
+
+```mermaid
+flowchart TD
+
+  subgraph BigQuery
+    BQ_L[BQ: ledger]
+    BQ_X[BQ: cross_reference]
+  end
+
+  subgraph Staging
+    STG_L[stg_ledger]
+    STG_X[stg_cross_reference]
+  end
+
+  subgraph Intermediate
+    PIVOT[int_cross_reference_pivoted]
+    ENRICH[int_ledger_enriched]
+    CORRECT[int_ledger_corrected]
+  end
+
+  subgraph Marts
+    CUSTOMER[customer_asset_summary]
+    LEDGER[securities_flow_summary]
+    AUDIT[audit_ledger_corrections]
+  end
+
+  BQ_L --> STG_L
+  BQ_X --> STG_X
+
+  STG_L --> ENRICH
+  STG_X --> PIVOT
+  PIVOT --> ENRICH
+  ENRICH --> CORRECT
+
+  CORRECT --> CUSTOMER
+  CORRECT --> LEDGER
+  STG_L --> AUDIT
+```
 
 ### Author
 
