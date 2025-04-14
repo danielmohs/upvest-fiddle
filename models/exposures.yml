@@ -1,0 +1,29 @@
+version: 2
+
+exposures:
+  - name: internal_securities_flow_dashboard
+    label: "Internal Securities Flow Dashboard"
+    type: dashboard
+    maturity: high
+    url: https://lookertest--url.com/internal-flow-dashboard
+    description: >
+      Used by operations and treasury teams to monitor net asset flows
+      across ledger accounts by ISIN.
+    depends_on:
+      - ref('securities_flow_summary')
+    owner:
+      name: Daniel Mohs
+      email: analytics.engineering@upvest.co
+
+  - name: customer_portfolio_summary
+    label: "Customer Portfolio Dashboard"
+    type: dashboard
+    maturity: high
+    url: https://looker-test-url.com/customer-dashboard
+    description: >
+      Shows customer-level trading activity, asset exposure, and platform usage.
+    depends_on:
+      - ref('customer_asset_summary')
+    owner:
+      name: Daniel Mohs
+      email: analytics.engineering@upvest.co

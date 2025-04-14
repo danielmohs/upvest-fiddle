@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: audit_ledger_corrections
+    description: >
+      Incremental audit model showing which booking_ids were corrected by newer bookings.
+      Includes only the original and correcting booking IDs for traceability.
+
+    columns:
+      - name: original_booking_id
+        description: "The booking ID that was corrected"
+        tests:
+          - not_null
+      - name: corrected_by_booking_id
+        description: "The booking ID of the correction entry"
+        tests:
+          - not_null
+          - unique
+      - name: audit_loaded_at
+        description: "Timestamp when the correction was loaded into the audit table"
+        tests:
+          - not_null
