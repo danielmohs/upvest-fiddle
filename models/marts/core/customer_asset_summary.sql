@@ -18,10 +18,8 @@ flows_calculated AS (
         client_id,
         venue_id,
        -- credits = buys and debits = sells for security movements
-        CASE WHEN credit_account_description = 'customer_account' THEN credit_amount 
-            ELSE 0 END AS shares_bought,
-        CASE WHEN debit_account_description = 'customer_account' THEN debit_amount 
-            ELSE 0 END AS shares_sold,
+        {{ get_shares_bought_by_customer('credit_account_description', 'credit_amount') }} AS shares_bought,
+        {{ get_shares_sold_by_customer('debit_account_description', 'debit_amount') }} AS shares_sold,
         -- Transaction counts
         CASE WHEN credit_account_description = 'customer_account' THEN 1 
             ELSE 0 END AS credit_txn,

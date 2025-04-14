@@ -66,8 +66,9 @@ models:
         description: "Short exchange ticker (e.g., NVDA, VWCE)"
       - name: account_id
         description: "Internal ledger account ID used for the transaction"
-      - name: client_id
-        description: "ID of the client associated with the transaction"
+#      - name: client_id
+#        description: "ID of the client associated with the transaction"
+## client_id is excluded for now due to its high cardinality in the sample
       - name: shares_bought
         description: "Total number of shares purchased (credits to customer account)"
       - name: shares_sold

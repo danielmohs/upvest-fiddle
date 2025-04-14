@@ -21,6 +21,8 @@ models:
           - unique
       - name: isin
         description: "International Securities Identification Number"
+        tests:
+          - not_null
       - name: operation_type
         description: "Type of ledger operation (e.g., securities_movement). Might include more types in future"
         tests:
@@ -33,6 +35,11 @@ models:
         description: "Type of debit account (e.g., customer_account, custodian_account)"
       - name: debit_amount
         description: "Amount debited from the account. For 'securities_movement' operations, this reflects the number of shares transferred"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              where: "operation_type = 'securities_movement'"
       - name: credit_account_id
         description: "Account ID for credit transactions"
         tests:
@@ -41,6 +48,11 @@ models:
         description: "Type of credit account (e.g., customer_account, custodian_account)"
       - name: credit_amount
         description: "Amount credited to the account. For 'securities_movement' operations, this reflects the number of shares transferred"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              where: "operation_type = 'securities_movement'"
       - name: booking_id_correction
         description: "Correction of the booking ID, renamed from booking_no_correction"
       - name: is_correction
@@ -54,6 +66,10 @@ models:
     tests:
       - dbt_utils.expression_is_true:
           expression: "debit_amount = credit_amount"
+          where: "operation_type = 'securities_movement'"
+      - dbt_utils.expression_is_true:
+          expression: "booking_id > booking_id_correction"
+          where: "is_correction = true"
 
 
   - name: stg_cross_reference

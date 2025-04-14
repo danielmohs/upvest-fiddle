@@ -1,0 +1,12 @@
+version: 2
+
+macros:
+  - name: get_shares_bought_by_customer
+    description: >
+      Returns the share amount if the credit account is classified as 'customer_account', otherwise returns 0.
+      Used to identify customer-side purchase activity.
+
+  - name: get_shares_sold_by_customer
+    description: >
+      Returns the share amount if the debit account is classified as 'customer_account'; otherwise returns 0.
+      Used to identify customer-side sell activity.

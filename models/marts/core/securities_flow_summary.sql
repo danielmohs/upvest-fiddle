@@ -21,11 +21,9 @@ flows_calculated AS (
              WHEN debit_account_description = 'customer_account' THEN debit_account_id
             END AS account_id,
         -- Credits = buys for customer accounts
-        CASE WHEN credit_account_description = 'customer_account' THEN credit_amount 
-            ELSE 0 END AS shares_bought,
+        {{ get_shares_bought_by_customer('credit_account_description', 'credit_amount') }} AS shares_bought,
         -- Debits = sells for customer accounts
-        CASE WHEN debit_account_description = 'customer_account' THEN debit_amount
-            ELSE 0 END AS shares_sold
+        {{ get_shares_sold_by_customer('debit_account_description', 'debit_amount') }} AS shares_sold
 
     FROM ledger
 ),
@@ -35,7 +33,7 @@ security_flows AS (
         i.security_name,
         i.security_ticker,
         f.account_id,
-        f.client_id,
+        --f.client_id, -- excluding client_id for now due to its high cardinality in the sample
         sum(f.shares_bought) AS shares_bought,
         sum(f.shares_sold) AS shares_sold,
         sum(f.shares_bought - f.shares_sold) AS net_flow,
@@ -43,7 +41,7 @@ security_flows AS (
         
     FROM flows_calculated f
     LEFT JOIN isin_lookup i ON f.isin = i.isin
-    GROUP BY 1, 2, 3, 4, 5
+    GROUP BY 1, 2, 3, 4--, 5
 )
 
 SELECT * FROM security_flows
