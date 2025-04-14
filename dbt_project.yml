@@ -38,7 +38,7 @@ models:
 seeds:
   fiddle:
     isin_lookup:
-      column_types:
+      +column_types:
         isin: string
-        name: string
-        ticker: string
+        security_name: string
+        security_ticker: string
